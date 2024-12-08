@@ -16,13 +16,11 @@ Socket::Socket(int32_t socket_fd) : socket_fd_(socket_fd) {
 }
 
 Socket::Socket(Socket&& rhs) {
-    socket_fd_ = rhs.socket_fd_;
-    rhs.socket_fd_ = -1;
+    socket_fd_ = std::exchange(rhs.socket_fd_, -1);
 }
 
 Socket& Socket::operator=(Socket&& rhs) {
-    socket_fd_ = rhs.socket_fd_;
-    rhs.socket_fd_ = socket_fd_;
+    std::swap(socket_fd_, rhs.socket_fd_);
     return *this;
 }
 

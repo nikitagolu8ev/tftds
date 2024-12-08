@@ -13,14 +13,15 @@
 #include "integral.h"
 #include "random_loss.h"
 
+using namespace cppnet;
 using namespace std::chrono_literals;
 
 void Serve() {
     while (true) {
-        cppnet::Socket broadcast_socket(cppnet::AddressFamily::IPv4, cppnet::Socket::Type::UDP);
+        Socket broadcast_socket(AddressFamily::IPv4, Socket::Type::UDP);
 
-        cppnet::InternetSocketAddress<cppnet::AddressFamily::IPv4> any_local_address(
-            cppnet::AnyAddress<cppnet::AddressFamily::IPv4>::Value, defaults::BroadcastPort);
+        InternetSocketAddress<AddressFamily::IPv4> any_local_address(
+            AnyAddress<AddressFamily::IPv4>::Value, defaults::BroadcastPort);
 
         broadcast_socket.SetOption(SOL_SOCKET, SO_REUSEADDR, 1);
         broadcast_socket.SetOption(SOL_SOCKET, SO_REUSEPORT, 1);
@@ -29,7 +30,7 @@ void Serve() {
 
         std::cout << "Waiting for broacast\n";
 
-        cppnet::InternetSocketAddress<cppnet::AddressFamily::IPv4> master_address;
+        InternetSocketAddress<AddressFamily::IPv4> master_address;
         uint16_t port = broadcast_socket.ReceiveObjectFrom<uint16_t>(&master_address);
         
         if (ShouldBeLost()) {
@@ -42,9 +43,9 @@ void Serve() {
         std::cout << "Received address: " << master_address.GetAddress().AsString() << ':'
                   << master_address.GetPort() << '\n';
 
-        cppnet::InternetSocketAddress worker_address(
-            cppnet::AnyAddress<cppnet::AddressFamily::IPv4>::Value, port);
-        cppnet::Socket worker_socket(cppnet::AddressFamily::IPv4, cppnet::Socket::Type::TCP);
+        InternetSocketAddress worker_address(
+            AnyAddress<AddressFamily::IPv4>::Value, port);
+        Socket worker_socket(AddressFamily::IPv4, Socket::Type::TCP);
 
         worker_socket.SetOption(SOL_SOCKET, SO_KEEPALIVE, 1);
         worker_socket.SetOption(IPPROTO_TCP, TCP_KEEPALIVE, 1);

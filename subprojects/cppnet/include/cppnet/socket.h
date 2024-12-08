@@ -162,7 +162,7 @@ public:
     template <typename T>
     ResultType<T> TryReceiveObjectFrom(SocketAddress* address, int32_t flags = 0) {
         size_t total_bytes_received = 0;
-        alignas(alignof(T)) std::byte object_buffer[sizeof(T)];
+        alignas(T) std::byte object_buffer[sizeof(T)];
 
         sockaddr* address_ptr = nullptr;
         socklen_t address_size = 0;
